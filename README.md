@@ -1,2 +1,2 @@
-# Plant Disease Recognition System PDRS
+# Contributures are Welcome
  
