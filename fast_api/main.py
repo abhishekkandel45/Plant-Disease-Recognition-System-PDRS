@@ -10,7 +10,7 @@ app = FastAPI()
 
 
 #Model Load
-MODEL = tf.keras.models.load_model("../API/model_api.h5")
+MODEL = tf.keras.models.load_model("./API/model_api.h5")
 CLASS_NAMES =['Apple___Apple_scab',
  'Apple___Black_rot',
  'Apple___Cedar_apple_rust',
