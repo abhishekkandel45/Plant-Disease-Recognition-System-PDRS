@@ -5,8 +5,9 @@ import numpy as np
 from io import BytesIO
 from PIL import Image
 import tensorflow as tf
- import os
-    os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
+import os
+
+os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
 
 
 app = FastAPI()
