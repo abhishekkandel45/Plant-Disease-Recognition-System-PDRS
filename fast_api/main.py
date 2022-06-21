@@ -5,16 +5,25 @@ import numpy as np
 from io import BytesIO
 from PIL import Image
 import tensorflow as tf
-import os
-
-os.environ['KMP_DUPLICATE_LIB_OK'] = 'TRUE'
-
 
 app = FastAPI()
+
+origins = [
+    "http://localhost",
+    "http://localhost:3000",
+]
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 
 #Model Load
 MODEL = tf.keras.models.load_model("./API/model_api.h5")
+
 CLASS_NAMES =['Apple___Apple_scab',
  'Apple___Black_rot',
  'Apple___Cedar_apple_rust',
@@ -56,7 +65,28 @@ CLASS_NAMES =['Apple___Apple_scab',
 
 @app.get("/ping")
 async def ping():
-    return "Hello, This is my first API"
+    return "Hello, I am Abhishek"
+
+def read_file_as_image(data) -> np.ndarray:
+    image = np.array(Image.open(BytesIO(data)))
+    return image
+
+@app.post("/predict")
+async def predict(
+    file: UploadFile = File(...)
+):
+    image = read_file_as_image(await file.read())
+    img_batch = np.expand_dims(image, 0)
     
-    if __name__ == "__main__":
-        uvicorn.run(app, host="localhost", port=8000)
+    predictions = MODEL.predict(img_batch)
+
+    predicted_class = CLASS_NAMES[np.argmax(predictions[0])]
+    confidence = np.max(predictions[0])
+    return {
+        'class': predicted_class,
+        'confidence': float(confidence)
+    }
+
+if __name__ == "__main__":
+    uvicorn.run(app, host='localhost', port=8000)
+
