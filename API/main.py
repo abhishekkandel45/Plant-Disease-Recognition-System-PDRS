@@ -87,9 +87,10 @@ async def predict(
     plant = data[predicted_class]["plant"]
     disease = data[predicted_class]["disease"]
     remedy = data[predicted_class]["remedy"]
-    confidence = np.max(predictions[0])
+    #confidence  in percentage
+    confidence = np.max(predictions[0]*100)
     return """
-    <h1>Class: {predicted_class} | Confidence: {confidence}</h1>
+    <h1>Class: {predicted_class} | Confidence: {confidence} % </h1>
     <h2>Plant: {plant}</h2>
     <h2>Disease: {disease}</h2>
     <h2>Remedy: {remedy}</h2>
