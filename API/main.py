@@ -6,6 +6,7 @@ import numpy as np
 from io import BytesIO
 from PIL import Image
 import tensorflow as tf
+import json
 
 app = FastAPI()
 
@@ -23,7 +24,7 @@ app.add_middleware(
 
 
 #Model Load
-MODEL = tf.keras.models.load_model("./API/model_api.h5")
+MODEL = tf.keras.models.load_model("model_api.h5")
 
 CLASS_NAMES =['Apple___Apple_scab',
  'Apple___Black_rot',
@@ -63,6 +64,7 @@ CLASS_NAMES =['Apple___Apple_scab',
  'Tomato___Tomato_Yellow_Leaf_Curl_Virus',
  'Tomato___Tomato_mosaic_virus',
  'Tomato___healthy']
+data = json.load(open("data.json"))
 
 @app.get("/ping")
 async def ping():
@@ -72,7 +74,7 @@ def read_file_as_image(data) -> np.ndarray:
     image = np.array(Image.open(BytesIO(data)).resize((240,240)))
     return image
 
-@app.post("/predict")
+@app.post("/predict", response_class=HTMLResponse)
 async def predict(
     file: UploadFile = File(...)
 ):
@@ -82,13 +84,18 @@ async def predict(
     predictions = MODEL.predict(img_batch)
 
     predicted_class = CLASS_NAMES[np.argmax(predictions[0])]
+    plant = data[predicted_class]["plant"]
+    disease = data[predicted_class]["disease"]
+    remedy = data[predicted_class]["remedy"]
     confidence = np.max(predictions[0])
-    return {
-        'class': predicted_class,
-        'confidence': float(confidence)
-    }
+    return """
+    <h1>Class: {predicted_class} | Confidence: {confidence}</h1>
+    <h2>Plant: {plant}</h2>
+    <h2>Disease: {disease}</h2>
+    <h2>Remedy: {remedy}</h2>
+    """.format(predicted_class=predicted_class, confidence=confidence, plant=plant, disease=disease, remedy=remedy)
 
-@app.get("/upload", response_class=HTMLResponse)
+@app.get("/", response_class=HTMLResponse)
 async def upload():
     return """
     <form action="/predict" enctype="multipart/form-data" method="post">
