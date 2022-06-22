@@ -34,7 +34,7 @@
        "disease":"healthy",
        "remedy":"Your crop is healthy"
     },
-    "Corn_(maize)___Cercospora_leaf_spot Gray_leaf_spot":{
+    "Corn_(maize)___Cercospora_leaf_spot":{
        "plant":"Corn",
        "disease":"Cercospora leaf spot",
        "remedy":"Rotate to non-host crops (outside of the Chenopodium family) for 2-3 years. Bury infected crop residues and destroy volunteer plants and weed hosts. Burn down fields after harvesting. Avoid planting succession crops close together (at least 100 meters apart)."
